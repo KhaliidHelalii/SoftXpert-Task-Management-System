@@ -76,23 +76,28 @@ exports.getAllTasks = async (req, res, next) => {
 
 exports.addTaskDependencies = async (req, res, next) => {
   try {
-    const { taskId, dependencies } = req.body;
-
+    const taskId = req.params.taskId;
+    const {dependencies} = req.body;  
+    console.log(dependencies);
     const task = await Task.findById(taskId);
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Verify that all dependencies exist
-    const invalidDependencies = dependencies.filter(depId => !mongoose.Types.ObjectId.isValid(depId));
-    if (invalidDependencies.length > 0) {
-      return res.status(400).json({ message: 'Invalid dependency ID(s)' });
+    const invalidDependencies = [];
+    for (const depId of dependencies) {
+      if (!mongoose.Types.ObjectId.isValid(depId)) {
+        invalidDependencies.push(depId);
+      } else {
+        const existingTask = await Task.findById(depId);
+        if (!existingTask) {
+          invalidDependencies.push(depId);
+        }
+      }
     }
-
-    // Check if all dependencies exist in the database
-    const existingDependencies = await Task.find({ _id: { $in: dependencies } });
-    if (existingDependencies.length !== dependencies.length) {
-      return res.status(400).json({ message: 'Some dependencies do not exist' });
+    
+    if (invalidDependencies.length > 0) {
+      return res.status(400).json({ message: 'Invalid dependency ID(s)', invalidDependencies });
     }
 
     // Update task dependencies
@@ -121,8 +126,6 @@ exports.getTaskDetails = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 exports.updateTask = async (req, res, next) => {
   try {
@@ -218,3 +221,4 @@ exports.updateTask = async (req, res, next) => {
   }
 };
 
+exports.add
