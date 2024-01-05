@@ -1,4 +1,3 @@
-// authController.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -11,7 +10,6 @@ exports.register = async (req, res, next) => {
   try {
     const { username, password, role } = req.body;
 
-    // Check if the username already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'Username already exists' });
@@ -20,14 +18,12 @@ exports.register = async (req, res, next) => {
     // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
     const newUser = new User({
       username,
       password: hashedPassword,
       role,
     });
 
-    // Save the user to the database
     await newUser.save();
 
     res.json({ message: 'User registered successfully' });
@@ -40,7 +36,6 @@ exports.login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
-    // Authenticate the user
     const user = await authService.authenticateUser(username, password);
 
     if (!user) {
@@ -60,5 +55,3 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
-
-// Other authentication-related controller functions...

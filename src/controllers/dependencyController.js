@@ -18,9 +18,6 @@ exports.getTaskDependencies = async (req, res, next) => {
     // ...
     res.json({ dependencies: /* retrieved dependencies */null });
   } catch (error) {
-    next(error);
+    next(error);  
   }
 };
-
-// Implement other dependency-related controller functions as needed
-// ...
