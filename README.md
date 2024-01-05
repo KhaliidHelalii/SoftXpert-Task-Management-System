@@ -5,6 +5,8 @@
 This project involves the development of a RESTful API for a Task Management System. The goal is to create a robust and scalable API adhering to industry best practices. The system will include authentication, task creation, retrieval, and update functionalities, along with task dependencies and role-based access control.
 
 ## Requirements
+### ERD Design
+![ERD](https://github.com/KhaliidHelalii/SoftXpert-Task-Management-System/assets/102702578/ddffff61-7dc1-4706-9f0e-7653835e3db3)
 
 ### Main Business Requirements
 
