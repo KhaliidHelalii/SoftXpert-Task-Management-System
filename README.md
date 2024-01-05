@@ -37,6 +37,10 @@ This project involves the development of a RESTful API for a Task Management Sys
 7. **Update Task Details**
    - Endpoint: `/tasks/:taskId`
    - Description: Updates task title, description, assignee, due date, and status.
+   
+### Api Documentation 
+- you can see the Api documentation using postman on [Postman](https://documenter.getpostman.com/view/21180724/2s9YsGjZF5).
+- also you can find the Json file attached to the repository.    
 
 #### Endpoints Authorizations
 
@@ -63,6 +67,12 @@ This project involves the development of a RESTful API for a Task Management Sys
 3. **Environment Variables**
 
    - Create a `.env` file based on `.env.example` and configure necessary variables.
+   ```bash
+   #add your database URL
+   MONGODB_URI = 
+   #add your JWT token
+   JWT_SECRET  =  
+   ```
 
 4. **Run the Application**
 
