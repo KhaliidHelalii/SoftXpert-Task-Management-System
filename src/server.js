@@ -1,11 +1,11 @@
 const path = require('path');
 require('dotenv').config({ path: path.join( '../.env') });
 
-const app = require('./app'); // Assuming your app.js file is in the same directory
+const app = require('./app'); 
 
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB
+
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
@@ -13,7 +13,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
   .then(() => {
     console.log('Connected to MongoDB');
-    // Start the server after successfully connecting to the database
+
+
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

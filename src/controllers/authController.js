@@ -1,7 +1,11 @@
 // authController.js
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authService = require('../services/authService');
+const path = require('path');
+require('dotenv').config({ path: path.join( '../.env') });
+
 
 exports.register = async (req, res, next) => {
   try {
@@ -39,8 +43,19 @@ exports.login = async (req, res, next) => {
     // Authenticate the user
     const user = await authService.authenticateUser(username, password);
 
-    // Return the authenticated user
-    res.json({ message: 'User logged in successfully', user });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+    });
+   // console.log('Generated Token:', token);
+
+
+    // Return the token
+    res.json({ token });
   } catch (error) {
     next(error);
   }
