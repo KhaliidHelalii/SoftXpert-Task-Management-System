@@ -2,11 +2,9 @@ const Task = require('../models/Task');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 
-
-
 exports.createTask = async (req, res, next) => {
   try {
-    const { title, description, assignee, dueDate } = req.body;
+    const { title, description, assignee, dueDate, dependencies } = req.body;
 
     // Check if assignee exists only if provided
     if (assignee) {
@@ -16,11 +14,23 @@ exports.createTask = async (req, res, next) => {
       }
     }
 
+    // Verify that all dependencies exist
+    const invalidDependencies = dependencies.filter(depId => !mongoose.Types.ObjectId.isValid(depId));
+    if (invalidDependencies.length > 0) {
+      return res.status(400).json({ message: 'Invalid dependency ID(s)' });
+    }
+
+    const existingDependencies = await Task.find({ _id: { $in: dependencies } });
+    if (existingDependencies.length !== dependencies.length) {
+      return res.status(400).json({ message: 'Some dependencies do not exist' });
+    }
+
     const newTask = new Task({
       title,
       description,
       assignee,
       dueDate,
+      dependencies,
     });
 
     await newTask.save();
@@ -79,6 +89,12 @@ exports.addTaskDependencies = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid dependency ID(s)' });
     }
 
+    // Check if all dependencies exist in the database
+    const existingDependencies = await Task.find({ _id: { $in: dependencies } });
+    if (existingDependencies.length !== dependencies.length) {
+      return res.status(400).json({ message: 'Some dependencies do not exist' });
+    }
+
     // Update task dependencies
     task.dependencies = dependencies;
 
@@ -90,7 +106,6 @@ exports.addTaskDependencies = async (req, res, next) => {
   }
 };
 
-// Retrieve details of a specific task including dependencies
 exports.getTaskDetails = async (req, res, next) => {
   try {
     const taskId = req.params.taskId;
@@ -108,63 +123,93 @@ exports.getTaskDetails = async (req, res, next) => {
 };
 
 
+
 exports.updateTask = async (req, res, next) => {
   try {
     const taskId = req.params.taskId;
-    const { title, description, assignee, dueDate, status } = req.body;
+    const { title, description, assignee, dueDate, status, dependencies } = req.body;
+    console.log(taskId);
 
-    const task = await Task.findById(taskId);
-
+    const task = await Task.findById(taskId).populate('dependencies');
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    // Log dependency IDs
+    task.dependencies.forEach(dep => console.log('Dependency ID:', dep._id));
+
+    const allDependenciesCompleted = task.dependencies.every(dep => dep.status === 'completed');
+    if (!allDependenciesCompleted && status === 'completed') {
+      return res.status(400).json({ message: 'Some dependencies are not completed' });
+    }
+
     // Check authorization
-    if (req.user.role === 'manager' || task.assignee.equals(req.user._id)) {
-      try {
-        if (assignee && !assignee.equals(task.assignee)) {
-          // If the user tries to update the assignee field, check authorization
-          if (req.user.role !== 'manager') {
-            return res.status(403).json({ message: 'Unauthorized to update assignee for this task' });
-          }
-          const assignedUser = await User.findById(assignee);
-          if (!assignedUser) {
-            throw new Error('Invalid assignee ID');
-          }
-          task.assignee = assignee;
+    if (req.user.role === 'manager' || (task.assignee && task.assignee.equals(req.user._id))) {
+      // Validate and update assignee if provided
+      if (assignee) {
+        const assignedUser = await User.findById(assignee);
+        if (!assignedUser) {
+          throw new Error('Invalid assignee ID');
         }
-
-        // Only allow updating status if the user is assigned to the task
-        if (req.user.role === 'manager' || task.assignee.equals(req.user._id)) {
-          if (status) {
-            task.status = status;
-          }
-        } else {
-          return res.status(403).json({ message: 'Unauthorized to update this task' });
-        }
-
-        // Update other fields if present and user is a manager
-        if (req.user.role === 'manager') {
-          if (title) task.title = title;
-          if (description) task.description = description;
-          if (dueDate) task.dueDate = dueDate;
-        } else {
-          // If the user is not a manager, only allow updating the status
-          if (title || description || dueDate) {
-            return res.status(403).json({ message: 'Unauthorized to update fields other than status' });
-          }
-        }
-
-        await task.save();
-
-        res.json({ message: 'Task updated successfully', task });
-      } catch (error) {
-        if (error instanceof mongoose.Error.CastError) {
-          // Handle CastError (invalid ObjectId)
-          return res.status(400).json({ message: 'Invalid field update' });
-        }
-        throw error; // Rethrow other errors
+        task.assignee = assignee;
       }
+
+      // Validate and update dependencies
+      if (dependencies) {
+        const invalidDependencies = dependencies.filter(depId => !mongoose.Types.ObjectId.isValid(depId));
+        if (invalidDependencies.length > 0) {
+          return res.status(400).json({ message: 'Invalid dependency ID(s)' });
+        }
+
+        // Log input dependencies array
+        console.log('Input dependencies:', dependencies);
+
+        const existingDependencies = await Task.find({ _id: { $in: dependencies } });
+
+        // Log IDs of existing dependencies
+        if (!existingDependencies || existingDependencies.length !== dependencies.length) {
+          return res.status(400).json({ message: 'Some dependencies do not exist' });
+        }
+
+        // Log dependencies being checked
+        console.log('Checking dependencies:', existingDependencies.map(dep => dep._id));
+
+        // Check if all dependencies are completed
+        const incompleteDependencies = existingDependencies.some(dep => dep.status !== 'completed');
+        if (incompleteDependencies && status === 'completed') {
+          return res.status(400).json({ message: 'Some dependencies are not completed' });
+        }
+
+        task.dependencies = dependencies;
+      }
+
+      // Only allow updating status if the user is assigned to the task
+      if (req.user.role === 'manager' || (task.assignee && task.assignee.equals(req.user._id))) {
+        if (status) {
+          if (!['pending', 'completed', 'canceled'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status value' });
+          }
+          task.status = status;
+        }
+      } else {
+        return res.status(403).json({ message: 'Unauthorized to update this task' });
+      }
+
+      // Update other fields if present and user is a manager
+      if (req.user.role === 'manager') {
+        if (title) task.title = title;
+        if (description) task.description = description;
+        if (dueDate) task.dueDate = dueDate;
+      } else {
+        // If the user is not a manager, only allow updating the status
+        if (title || description || dueDate) {
+          return res.status(403).json({ message: 'Unauthorized to update fields other than status' });
+        }
+      }
+
+      await task.save();
+
+      res.json({ message: 'Task updated successfully', task });
     } else {
       res.status(403).json({ message: 'Unauthorized to update this task' });
     }

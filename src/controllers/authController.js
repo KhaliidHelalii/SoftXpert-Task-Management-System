@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authService = require('../services/authService');
 const path = require('path');
-require('dotenv').config({ path: path.join( '../.env') });
+require('dotenv').config({ path: path.join('../.env') });
 
 
 exports.register = async (req, res, next) => {
@@ -46,7 +46,7 @@ exports.login = async (req, res, next) => {
     const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '7d',
     });
-   // console.log('Generated Token:', token);
+    // console.log('Generated Token:', token);
 
 
     // Return the token

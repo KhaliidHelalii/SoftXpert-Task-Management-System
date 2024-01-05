@@ -13,11 +13,9 @@ app.use(bodyParser.json());
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
-const dependencyRoutes = require('./routes/dependencyRoutes');
 
 app.use('/auth', authRoutes);
 app.use('/tasks', taskRoutes);
-app.use('/dependencies', dependencyRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
