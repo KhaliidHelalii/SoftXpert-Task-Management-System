@@ -1,0 +1,348 @@
+{
+	"info": {
+		"_postman_id": "dd19dfc0-4184-485d-a42f-db67afa91b37",
+		"name": "Task Managment System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21180724",
+		"_collection_link": "https://blue-star-294537.postman.co/workspace/My-Workspace~4732b09b-8e8c-42fe-8836-2fc65e055d3e/collection/21180724-dd19dfc0-4184-485d-a42f-db67afa91b37?action=share&source=collection_link&creator=21180724"
+	},
+	"item": [
+		{
+			"name": "Authenication",
+			"item": [
+				{
+					"name": "User Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be a JSON object\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User should have been created successfully\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.have.property('message', 'User created successfully');\r",
+									"    pm.expect(responseBody).to.have.property('user');\r",
+									"    pm.expect(responseBody.user).to.have.property('username', 'testuser');\r",
+									"    pm.expect(responseBody.user).to.have.property('role', 'user');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testuser3\",\r\n  \"password\": \"testpassword\",\r\n  \"role\": \"user\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manager Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be a JSON object\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"User should have been created successfully\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.have.property('message', 'User created successfully');\r",
+									"    pm.expect(responseBody).to.have.property('user');\r",
+									"    pm.expect(responseBody.user).to.have.property('username', 'testuser');\r",
+									"    pm.expect(responseBody.user).to.have.property('role', 'user');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testmanager\",\r\n  \"password\": \"testpassword\",\r\n  \"role\": \"manager\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"testuser1\",\r\n  \"password\": \"testpassword\"\r\n  }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "Update Task ",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTk0NTQxZTI5ZjI5OGVkMjMyMGZhMjAiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTcwNDQ1OTYxMywiZXhwIjoxNzA1MDY0NDEzfQ._SQErIYyNADy-xkdiaF1mbuRHq3wqmCP1yuZFQMWO1o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Updated Task Title\",\r\n  \"description\": \"Updated Task Description\",\r\n  \"assignee\": \"65945f6368b63fbdd30f5a31\",\r\n  \"dueDate\": \"2024-01-15\",\r\n  \"status\": \"completed\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/6597fd6dca8bb0aeb2cb3bf8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"6597fd6dca8bb0aeb2cb3bf8"
+							]
+						},
+						"description": "Only Manager "
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTk0NTQxZTI5ZjI5OGVkMjMyMGZhMjAiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTcwNDQ1OTYxMywiZXhwIjoxNzA1MDY0NDEzfQ._SQErIYyNADy-xkdiaF1mbuRHq3wqmCP1yuZFQMWO1o",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Math1\",\r\n  \"description\": \"Dr Emad \",\r\n  \"assignee\": \"65945f6368b63fbdd30f5a31\",\r\n  \"dueDate\": \"2024-01-15\",\r\n  \"status\": \"pending\",\r\n  \"dependencies\": [\"5faff1c96a7bfe06c73609a2\", \"5faff1c96a7bfe06c73609a3\"] \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get task's details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTk0NWY2MzY4YjYzZmJkZDMwZjVhMzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTcwNDQ3OTkxMSwiZXhwIjoxNzA1MDg0NzExfQ.vMaf425R96GmGX3qBJVXuBzYuMxfUx_WsZ6oUgfquLQ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/65983b6f72f8fdde28b75b28",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"65983b6f72f8fdde28b75b28"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tasks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTk0NWY2MzY4YjYzZmJkZDMwZjVhMzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTcwNDQ2MzA0MSwiZXhwIjoxNzA1MDY3ODQxfQ.IS230lZFpt8oqnqmGSNkOAyYlCapkXRbK5MIu-mGVOY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add dependencies",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTk0NTQxZTI5ZjI5OGVkMjMyMGZhMjAiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTcwNDQ4NTQyMSwiZXhwIjoxNzA1MDkwMjIxfQ.GYvIU04Fei6dYrYYXpG-dEZYqJNIXNp3N4OqfZBmh7M",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"dependencies\": [\"6597f79e0073006b1ca20a28\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/tasks/dependencies/6596cc71827a6f73428da1a9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"tasks",
+								"dependencies",
+								"6596cc71827a6f73428da1a9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
