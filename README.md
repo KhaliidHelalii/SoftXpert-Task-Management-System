@@ -74,4 +74,4 @@ This project involves the development of a RESTful API for a Task Management Sys
 
 ## Conclusion
 
-You have now successfully installed and configured the Task Management System API. For any questions or issues, please refer to the API documentation or contact the development team.
+You have now successfully installed and configured the Task Management System API. For any questions or issues, please refer to the API documentation or contact the development team
